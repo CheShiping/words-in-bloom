@@ -3,10 +3,16 @@ node_modules/
 
 # Next.js build output
 .next/
+.next_stale*/
 out/
+next-env.d.ts
+
+# Deployment
+.vercel
 
 # Local assistant memory
 .workbuddy/
+.playwright-cli/
 
 # Python
 __pycache__/

@@ -606,6 +606,8 @@ body.page-hidden .petal-field .petal::after {
   margin: auto;
   padding: 44px 0 54px;
   overflow-x: clip;
+  /* 横向交给翻页手势脚本，纵向保留原生滚动 */
+  touch-action: pan-y;
 }
 .page {
   display: none;

@@ -167,7 +167,7 @@
 
 | 组件 | 类名 | 关键规格 |
 |---|---|---|
-| 沉浸学习卡 | `.study-card.glass.swipe-target` | max 760px、min-height 380px、34px 圆角、居中大字；移动端 24px 圆角、导航键移到卡片下方两列 |
+| 沉浸学习卡 | `.study-card.glass.swipe-target` | max 760px、min-height 380px、34px 圆角、居中大字；移动端 24px 圆角；**切换键固定在卡片下方一行**（`.study-nav-row`，左右各一枚圆钮），不与卡片并排、不一上一下 |
 | 记忆卡片 | `.flip-scene` / `.flip-card` / `.face.front/.back` | 740×420px（移动端 340/300px）、40px 圆角；**双面交叉淡化**（opacity .22s），非 3D 翻转；`:focus-visible` 2px 粉描边 |
 | 测验卡 | `.quiz-card.glass` / `.option` | max 760px / min-height 340px；选项两列（移动端单列）、`optionReveal .3s` 逐项错峰 0.04s |
 | 答题反馈 | `.option.correct/.wrong/.dim` | 正确浅绿 + 柔光、错误浅粉 + `shake .35s`、其余 `.6` 透明度；暗色各自反色 |
@@ -235,6 +235,16 @@
 | 回弹 | 未提交 `.24s cubic-bezier(.22,1,.36,1)`；提交后立即归位并由离场动画接管 |
 | 防冲突 | 卡片手势后 `400ms` 内不触发翻页；页面级手势排除 `.swipe-deck, input, textarea, select` 与卡片几何范围；滑动后 `400ms` 截断补发 click |
 | 触屏 | `.swipe-deck { touch-action: pan-y }`，横向交给脚本、纵向保留原生滚动 |
+
+**实现现状**（`useSwipeDeck` hook，鼠标与触摸同一套 Pointer Events）：
+
+- `.swipe-deck` = 手势容器（`touch-action: pan-y`）；`.swipe-target` = 被跟手变形的元素（`will-change: transform, opacity` + `backface-visibility: hidden`）。`.main` 也设 `touch-action: pan-y`，让整页横向手势不被浏览器接管。
+- 卡片手势：`.study-stage`（沉浸学习）、`.flip-scene`（记忆卡片）、`.quiz-card`（记忆测试）；整页手势挂在 `.main`，目标是被拖动的 `.page` 区块。
+- 页面级手势的排除清单：`.swipe-deck, input, textarea, select, button, a, [role='button']`，另有「卡片手势后 400ms 内不翻页」。
+- 提交时把手势留下的位移与透明度**传给离场动画**，让卡片/页面从当前位置接续滑出，不跳变；离场结束再翻页。
+- 拖拽期间给 `<body>` 挂 `.swiping-x` 禁用文字选中，避免横向拖动误选文本。
+- 滑动后 400ms 内的 click 由 `onClickCapture` 截断，防止松手误触按钮。
+- 键盘 ← → 与手势共用同一把 busy 锁；在首页 / 词典库 / 收藏夹，← → 直接整页翻页。
 
 ### 7.4 花瓣三层（确定性播种 + CSS 变量）
 
@@ -363,3 +373,5 @@ dev 预览用 `npm run dev`（默认 3000 端口）；静态预览用 `npx serve
 | 11 | 词卡键盘不可达 | 只能用鼠标打开单词 | `.word-card` 补 `role="button"` / `tabIndex` / Enter·Space 键处理 |
 
 **设计系统缺口**（此前完全缺失）：暗色「夜樱」主题与全套暗色变量、语义 token 层（组件零硬编码底色）、`.theme-btn` 主题开关、选书弹窗（首访不可关闭 + 切书软重启回首页）、768px 起的 44px 触摸目标 / 16px 输入框 / safe-area、1080–360px 断点补齐、`@media (hover: none)` 按下态、`tabular-nums` 与 `overflow-wrap: anywhere` 补全、`.tools` 顶栏工具区布局规则、`.nav button em` 的 `nowrap` 防线。
+
+**新增能力**（同日追加）：整页左右滑动翻页（72px 阈值，`.main` 统一接管）、卡片左右滑动（56px 阈值，覆盖沉浸学习 / 记忆卡片 / 记忆测试）、沉浸学习切换键改为卡片下方一行（`.study-nav-row`）。手势层见 §7.3。

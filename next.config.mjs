@@ -8,6 +8,8 @@ const nextConfig = {
   assetPrefix: basePath || undefined,
   images: { unoptimized: true },
   trailingSlash: true,
+  // 关闭开发模式的角标（Next Logo / 构建指示器），保持界面干净。
+  devIndicators: false,
 };
 
 export default nextConfig;
