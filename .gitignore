@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Local assistant memory
+.workbuddy/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment and logs
+.env*
+!.env.example
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
