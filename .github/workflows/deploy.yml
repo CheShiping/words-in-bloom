@@ -48,3 +48,6 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # Pages 未启用时自动开启，避免首次部署因缺设置而失败
+          enablement: true
